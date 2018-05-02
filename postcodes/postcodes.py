@@ -3,6 +3,7 @@ import collections
 import concurrent.futures
 import functools
 import json
+import multiprocessing
 import pathlib
 import urllib.request
 
@@ -83,7 +84,7 @@ def main():
     def job(_postcode, _positions):
         ret[_postcode] = union_shapes(_positions).centroid
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=multiprocessing.cpu_count() - 1) as executor:
         futures = [executor.submit(job, postcode, positions) for postcode, positions in pe.postcodes.items()]
 
         # give meaningful progressbar
